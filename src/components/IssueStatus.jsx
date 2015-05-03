@@ -1,7 +1,7 @@
 import React from 'react';
 import { PropTypes, addons } from 'react/addons';
 const { update } = addons;
-import * as GithubApi from 'lib/github';
+import * as GithubApi from 'mock/github';
 import _ from 'lodash';
 import { ISSUE_WARNINGS, WARNING_GRAVITY_COLOR, ISSUE_STATUS, ISSUE_LABELS, DEPENDENCY_PATTERN } from 'constants/issue';
 
