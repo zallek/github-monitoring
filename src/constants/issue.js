@@ -5,6 +5,8 @@
  */
 export const ISSUE_WARNINGS = {
   DEPENDENCIES_NOT_DEPLOYED: {gravity: 0, abr: 'DEPS', title: 'Issue is deployed but some dependencies are not'},
+  DEPENDENCIES_ITSELF: {gravity: 0, abr: 'DEPS', title: `reference it self as a dependencies`},
+  DEPENDENCIES_CYCLIC(id) { return {gravity: 0, abr: 'DEPS', title: `dependency ${id} (child) is also a dependent (parent)`}; },
   DEPENDENCIES_CLOSED: {gravity: 1, abr: 'DEPS', title: 'Some dependencies are closed but not deployed'},
   NOT_DEPLOYED_ON_STAGING: {gravity: 1, abr: 'DEPLOY', title: 'Issue is deployed but not in staging'},
   NOT_CLOSED: {gravity: 2, abr: 'GITHUB', title: 'Issue is deployed but the ticket is not closed'},

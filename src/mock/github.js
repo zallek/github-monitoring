@@ -29,7 +29,7 @@ function generateRandomComments() {
   //Max 3, chance: (30%^X) to get X
   for (let i = 0; i<3; i++) {
     let random = randomInt(1, 100);
-    if (random <= 30) {
+    if (random <= 33) {
       comments.push(`DEPENDS ON #${randomInt(1, 100)}`);
     }
   }

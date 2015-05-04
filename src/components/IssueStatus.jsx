@@ -50,9 +50,10 @@ const IssueStatus = React.createClass({
   _computeDependenciesStatus(issueId) {
     let issuesList = this.state.issuesList,
         issue = issuesList[issueId],
-        dependenciesStatus = _.map(issue.dependenciesId, (id) => [issuesList[id].status, issuesList[id].dependenciesStatus]);
+        dependenciesIdDeep = this._getDependenciesIdDeep(issueId);
 
-    dependenciesStatus = _.compact(_.flatten(dependenciesStatus));
+    let dependenciesStatus = _.map(dependenciesIdDeep, (id) => issuesList[id].status);
+    dependenciesStatus = _.compact(dependenciesStatus); //Some dependencies might have no status
     dependenciesStatus = this._getLowestStatusStep(dependenciesStatus);
 
     this.setState(update(this.state, {
@@ -76,19 +77,46 @@ const IssueStatus = React.createClass({
 
   },
 
-  _addOrUpdateIssue({id, dependenciesId = [], dependentsId = [], ...othersProps}) {
+  _addIssue({id, ...othersProps}) {
     this.setState(update(this.state, {
       issuesList: {
         $merge: {
           [id]: {
             id: id,
-            dependenciesId: dependenciesId,
-            dependentsId: dependentsId,
+            dependenciesId: [],
+            dependentsId: [],
+            warnings: [],
             fetched: false,
             ...othersProps,
           }
         }
       }
+    }));
+  },
+
+  _updateIssue({id, ...othersProps}) {
+    this.setState(update(this.state, {
+      issuesList: {
+        [id]: {
+          $merge: {
+            ...othersProps,
+          }
+        }
+      }
+    }));
+  },
+
+  _getDependentsIdDeep(issueId) {
+    let issueLists = this.state.issuesList;
+    return _.flatten(_.map(issueLists[issueId].dependentsId, (dependentId) => {
+      return [dependentId].concat(this._getDependentsIdDeep(dependentId));
+    }));
+  },
+
+  _getDependenciesIdDeep(issueId) {
+    let issueLists = this.state.issuesList;
+    return _.flatten(_.map(issueLists[issueId].dependenciesId, (dependencyId) => {
+      return [dependencyId].concat(this._getDependenciesIdDeep(dependencyId));
     }));
   },
 
@@ -102,16 +130,52 @@ const IssueStatus = React.createClass({
 
       let labels = _.uniq(_.filter(ISSUE_LABELS, ({status}, label) => _.contains(response.labels, label)));
       let status = this._getLowestStatusStep(_.pluck(labels, 'status'));
+      let warnings = [];
+
+      this._updateIssue({
+        id: issueId,
+        href: response.href,
+        title: response.title,
+        dateStart: response.dateStart,
+        status: status,
+        fetched: true,
+      });
 
       _.each(dependenciesId, (dependencyId) => {
-        let issue = _.find(this.state.issuesList, {id: dependencyId});
-        if (!issue) {
-          this._addOrUpdateIssue({
+        //Check if equal
+        if (dependencyId === issueId) {
+          warnings.push(ISSUE_WARNINGS.DEPENDENCIES_ITSELF);
+          return;
+        }
+
+        let issueExists = !!this.state.issuesList[dependencyId];
+        //Add if not exist
+        if (!issueExists) {
+          this._addIssue({
             id: dependencyId,
-            dependentsId: [issueId]
           });
           this._fetchIssue(dependencyId);
-        } else {
+        }
+
+        let dependentsIdDeep = this._getDependentsIdDeep(issueId),
+            includedInDependents = _.contains(dependentsIdDeep, dependencyId);
+
+        if (includedInDependents) {
+          warnings.push(ISSUE_WARNINGS.DEPENDENCIES_CYCLIC(dependencyId));
+          return;
+        }
+        else {
+          //Add dependencyId to issueId's dependencies
+          this.setState(update(this.state, {
+            issuesList: {
+              [issueId]: {
+                dependenciesId: {
+                  $push: [dependencyId],
+                }
+              }
+            }
+          }));
+          //Add issueId to dependencyId's dependents
           this.setState(update(this.state, {
             issuesList: {
               [dependencyId]: {
@@ -124,30 +188,35 @@ const IssueStatus = React.createClass({
         }
       });
 
-      this._addOrUpdateIssue({
+      let dependenciesStatus = this._computeDependenciesStatus(issueId);
+      this._updateIssue({
         id: issueId,
-        href: response.href,
-        title: response.title,
-        dateStart: response.dateStart,
-        status: status,
-        dependenciesId: dependenciesId,
-        fetched: true,
+        dependenciesStatus: dependenciesStatus,
       });
 
-      this._computeDependenciesStatus(issueId);
-      this._computeWarnings(issueId);
+      warnings.concat(this._computeWarnings(issueId));
+      this.setState(update(this.state, {
+        issuesList: {
+          [issueId]: {
+            warnings: {
+              $push: warnings,
+            }
+          }
+        }
+      }));
     });
   },
 
   componentWillMount() {
-    this._addOrUpdateIssue({id: this.state.topIssueId});
-    this._fetchIssue(this.state.topIssueId);
+    let {topIssueId} = this.state;
+    this._addIssue({id: topIssueId});
+    this._fetchIssue(topIssueId);
   },
 
   render() {
-    let {topIssueId, issuesList} = this.state,
+    let {topIssueId} = this.state,
         {displayDepedencies} = this.props,
-        dependenciesId = issuesList[topIssueId].dependenciesId;
+        dependenciesId = this._getDependenciesIdDeep(topIssueId);
     return (
       <div className="IssueMonitoring">
         <div className="IssueMonitoring-issue">
@@ -207,7 +276,7 @@ const IssueRowInfo = React.createClass({
     let {id, href, title, dateStart, status, dependenciesStatus, warnings} = this.props;
     return (
       <div className="IssueStatus"
-           style={{'backgroundColor': status.color}}>
+           /*style={{'backgroundColor': status.color}}*/>
         <a className="IssueStatus-id" href={href}>
           #{id}
         </a>
