@@ -5,6 +5,7 @@ import _ from 'lodash';
 import { ISSUE_WARNINGS, ISSUE_STATUS } from 'constants/issue';
 
 import 'font-awesome/css/font-awesome.css';
+import './IssueInfoRow.scss';
 
 /**
  * #12 <title> <dateStart> <status> [Deps:<dependenciesStatus>] [Warnings]
@@ -16,10 +17,11 @@ const IssueInfoRow = React.createClass({
 
   propTypes: {
     id: PropTypes.string.isRequired,
-    href: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    dateStart: PropTypes.string.isRequired,
-    status: PropTypes.oneOf(_.values(ISSUE_STATUS)).isRequired,
+    fetched: PropTypes.bool.isRequired,
+    href: PropTypes.string,
+    title: PropTypes.string,
+    dateStart: PropTypes.string,
+    status: PropTypes.oneOf(_.values(ISSUE_STATUS)),
     dependenciesStatus: PropTypes.oneOf(_.values(ISSUE_STATUS)),
     warnings: PropTypes.arrayOf(PropTypes.oneOf(_.values(ISSUE_WARNINGS))),
   },
@@ -29,35 +31,49 @@ const IssueInfoRow = React.createClass({
   },
 
   render() {
-    let {id, href, title, dateStart, status, dependenciesStatus, warnings} = this.props;
+    let {id, href, fetched} = this.props;
     return (
-      <Panel className="IssueStatus"
-           /*style={{'backgroundColor': status.color}}*/>
-        <a className="IssueStatus-id" href={href}>
+      <Panel className="IssueInfoRow" /*style={{'backgroundColor': status.color}}*/>
+        <a className="IssueInfoRow-id" href={href}>
           #{id}
         </a>
-        <span className="IssueStatus-title">
+        {fetched ? this._renderInfo() : this._renderSpinner()}
+      </Panel>
+    );
+  },
+
+  _renderSpinner() {
+    return (
+      <i className="fa fa-circle-o-notch fa-spin"/>
+    );
+  },
+
+  _renderInfo() {
+    let {title, dateStart, status, dependenciesStatus, warnings} = this.props;
+    return (
+      <div className="IssueInfoRow-info">
+        <span className="IssueInfoRow-title">
           {title}
         </span>
-        <span className="IssueStatus-dateStart">
+        <span className="IssueInfoRow-dateStart">
           {this._formatDate(dateStart)}
         </span>
-        <span className="IssueStatus-status" style={{'color': status.color}}>
+        <span className="IssueInfoRow-status" title="Status" style={{'color': status.color}}>
           {status.label}
         </span>
         {dependenciesStatus &&
-          <span className="IssueStatus-dependenciesStatus" style={{'color': dependenciesStatus.color}}>
-            Deps: {dependenciesStatus.label}
+          <span className="IssueInfoRow-dependenciesStatus" title="Dependencies Status" style={{'color': dependenciesStatus.color}}>
+            DEPS: {dependenciesStatus.label}
           </span>
         }
         {warnings &&
-          <div className="IssueStatus-warnings">
-            {warnings.map((warning) => (
-              <IssueWarning {...warning}/>
+          <div className="IssueInfoRow-warnings">
+            {warnings.map((warning, i) => (
+              <IssueWarning key={i} {...warning}/>
             ))}
           </div>
         }
-      </Panel>
+      </div>
     );
   },
 
@@ -76,20 +92,21 @@ const IssueWarning = React.createClass({
 
   getDefaultPropTypes() {
     return {
-      iconClassName: 'fa fa-warning',
+      iconClassName: 'fa fa-exclamation-triangle',
       color: 'red',
     };
   },
 
   render() {
-    let {title, abr, iconClassName, color} = this.props;
+    let {title, abr, iconClassName, color, ...otherProps} = this.props;
     return (
-      <div className="IssueWarning"
+      <span className="IssueWarning"
            style={{'color': color}}
-           title={title}>
+           title={title}
+           {...otherProps}>
         <i className={iconClassName}/>
         <span className="IssueWarning-abr">{abr}</span>
-      </div>
+      </span>
     );
   },
 

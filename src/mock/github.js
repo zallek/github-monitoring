@@ -29,7 +29,7 @@ function generateRandomComments() {
   //Max 3, chance: (30%^X) to get X
   for (let i = 0; i<3; i++) {
     let random = randomInt(1, 100);
-    if (random <= 33) {
+    if (random <= 35) {
       comments.push(`DEPENDS ON #${randomInt(1, 100)}`);
     }
   }
@@ -41,7 +41,7 @@ export function getIssueInfo({user, project, issueId}, callback) {
     callback({
       title: `Title ${issueId}`,
       href: `https://github.com/${user}/{project}/issues/{issueId}`,
-      dateStart: '2015-05-01T12:00:00Z',
+      dateStart: '2015-05-01',
       labels: pickRandom(LABELS),
       comments: generateRandomComments(),
     });

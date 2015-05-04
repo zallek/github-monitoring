@@ -7,6 +7,8 @@ import * as GithubApi from 'mock/github';
 import IssueInfoRow from 'components/IssueInfoRow';
 import { ISSUE_WARNINGS, ISSUE_LABELS, DEPENDENCY_PATTERN } from 'constants/issue';
 
+import './IssueStatus.scss';
+
 const GithubPropTypes = {
   repository: PropTypes.shape({
     user: PropTypes.string.isRequired,
@@ -108,16 +110,16 @@ const IssueStatus = React.createClass({
 
   _getDependentsIdDeep(issueId) {
     let issueLists = this.state.issuesList;
-    return _.flatten(_.map(issueLists[issueId].dependentsId, (dependentId) => {
+    return _.uniq(_.flatten(_.map(issueLists[issueId].dependentsId, (dependentId) => {
       return [dependentId].concat(this._getDependentsIdDeep(dependentId));
-    }));
+    })));
   },
 
   _getDependenciesIdDeep(issueId) {
     let issueLists = this.state.issuesList;
-    return _.flatten(_.map(issueLists[issueId].dependenciesId, (dependencyId) => {
+    return _.uniq(_.flatten(_.map(issueLists[issueId].dependenciesId, (dependencyId) => {
       return [dependencyId].concat(this._getDependenciesIdDeep(dependencyId));
-    }));
+    })));
   },
 
   _fetchIssue(issueId) {
@@ -148,9 +150,9 @@ const IssueStatus = React.createClass({
           return;
         }
 
-        let issueExists = !!this.state.issuesList[dependencyId];
+        let dependencyIssue = this.state.issuesList[dependencyId];
         //Add if not exist
-        if (!issueExists) {
+        if (!dependencyIssue) {
           this._addIssue({
             id: dependencyId,
           });
@@ -158,13 +160,15 @@ const IssueStatus = React.createClass({
         }
 
         let dependentsIdDeep = this._getDependentsIdDeep(issueId),
-            includedInDependents = _.contains(dependentsIdDeep, dependencyId);
+            includedInDeepDependents = _.contains(dependentsIdDeep, dependencyId),
+            dependenciesId = dependencyIssue ? dependencyIssue.dependencies : [],
+            includedInDependencies = _.contains(dependenciesId, dependencyId);
 
-        if (includedInDependents) {
+        if (includedInDeepDependents) {
           warnings.push(ISSUE_WARNINGS.DEPENDENCIES_CYCLIC(dependencyId));
           return;
         }
-        else {
+        else if (!includedInDependencies) {
           //Add dependencyId to issueId's dependencies
           this.setState(update(this.state, {
             issuesList: {
@@ -217,17 +221,18 @@ const IssueStatus = React.createClass({
     let {topIssueId} = this.state,
         {displayDepedencies} = this.props,
         dependenciesId = this._getDependenciesIdDeep(topIssueId);
+
     return (
-      <div className="IssueMonitoring">
-        <div className="IssueMonitoring-issue">
+      <div className="IssueStatus">
+        <div className="IssueStatus-issue">
           {this._renderIssueInfo(topIssueId)}
         </div>
         {displayDepedencies && dependenciesId.length > 0 &&
-          <div className="IssueMonitoring-dependencies">
-            <h2 className="IssueMonitoring-dependenciesTitle">
+          <div className="IssueStatus-dependencies">
+            <h2 className="IssueStatus-dependenciesTitle">
               Dependencies
             </h2>
-            <div className="IssueMonitoring-dependenciesList">
+            <div className="IssueStatus-dependenciesList">
               {dependenciesId.map(this._renderIssueInfo)}
             </div>
           </div>
@@ -238,13 +243,8 @@ const IssueStatus = React.createClass({
 
   _renderIssueInfo(issueId) {
     let issueState = this.state.issuesList[issueId];
-    if (!issueState.fetched) {
-      return (
-        <i className="fa fa-circle-o-notch fa-spin"/>
-      );
-    }
     return (
-      <IssueInfoRow {...issueState}/>
+      <IssueInfoRow key={issueState.id} {...issueState}/>
     );
   },
 

@@ -1,0 +1,42 @@
+.IssueInfoRow{
+  display: flex;
+
+  .panel-body{
+    & > *, & > .IssueInfoRow-info > *{
+      padding: 5px;
+    }
+
+    .IssueInfoRow-info {
+      display: inline;
+    }
+
+    .IssueInfoRow-id{
+      flex: 0 0 20px;
+    }
+    .IssueInfoRow-title{
+      flex: 1 1 auto;
+      text-overflow: ellipsis;
+    }
+    .IssueInfoRow-dateStart{
+      flex: 1 1 auto;
+    }
+    .IssueInfoRow-status, .IssueInfoRow-dependenciesStatus{
+      flex: 1 1 auto;
+
+      &:hover{
+        box-shadow: 0px 0px 8px #AAA;
+        border-radius: 4px;
+      }
+    }
+    .IssueInfoRow-warnings{
+      flex: 1 1 auto;
+      display: inline;
+    }
+  }
+}
+
+.IssueWarning{
+  .IssueWarning-abr{
+    text-transform: uppercase;
+  }
+}

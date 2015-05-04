@@ -19,12 +19,12 @@ export const WARNING_GRAVITY_COLOR = {
 };
 
 export const ISSUE_STATUS = {
-  BACKLOG: {step: 0, label: 'In Backlog', color: 'yellow'},
-  WORK_IN_PROGRESS: {step: 1, label: 'Working in progress', color: 'blue'},
-  ON_HOLD: {step: 2, label: 'On Hold', color: 'red'},
-  CLOSED: {label: 'Closed', color: 'white'},
-  DEPLOYED_STATING: {step: 3, label: 'Deployed in staging', color: 'green'},
-  DEPLOYED_PRODUCTION: {step: 4, label: 'Deployed in production', color: 'green'},
+  BACKLOG: {step: 0, label: 'In Backlog', color: 'rgb(18, 23, 129)'},
+  WORK_IN_PROGRESS: {step: 1, label: 'Working in progress', color: 'rgb(93, 161, 201)'},
+  ON_HOLD: {step: 2, label: 'On Hold', color: 'rgb(227, 27, 21)'},
+  CLOSED: {label: 'Closed', color: 'rgb(188, 188, 188)'},
+  DEPLOYED_STATING: {step: 3, label: 'Deployed in staging', color: 'rgb(93, 195, 90)'},
+  DEPLOYED_PRODUCTION: {step: 4, label: 'Deployed in production', color: 'rgb(50, 166, 46)'},
 };
 
 /**
