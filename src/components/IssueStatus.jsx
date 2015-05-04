@@ -76,7 +76,7 @@ const IssueStatus = React.createClass({
 
   },
 
-  _addIssue({id, dependenciesId = [], dependentsId = []}) {
+  _addOrUpdateIssue({id, dependenciesId = [], dependentsId = [], ...othersProps}) {
     this.setState(update(this.state, {
       issuesList: {
         $merge: {
@@ -85,6 +85,7 @@ const IssueStatus = React.createClass({
             dependenciesId: dependenciesId,
             dependentsId: dependentsId,
             fetched: false,
+            ...othersProps,
           }
         }
       }
@@ -105,7 +106,10 @@ const IssueStatus = React.createClass({
       _.each(dependenciesId, (dependencyId) => {
         let issue = _.find(this.state.issuesList, {id: dependencyId});
         if (!issue) {
-          this._addIssue({id: dependencyId, dependentsId: [issueId]});
+          this._addOrUpdateIssue({
+            id: dependencyId,
+            dependentsId: [issueId]
+          });
           this._fetchIssue(dependencyId);
         } else {
           this.setState(update(this.state, {
@@ -120,21 +124,15 @@ const IssueStatus = React.createClass({
         }
       });
 
-      this.setState(update(this.state, {
-        issuesList: {
-          [issueId]: {
-            $merge: {
-              href: response.href,
-              title: response.title,
-              dateStart: response.dateStart,
-              status: status,
-              dependenciesId: dependenciesId,
-              dependenciesStatus: [],
-              fetched: true,
-            }
-          }
-        }
-      }));
+      this._addOrUpdateIssue({
+        id: issueId,
+        href: response.href,
+        title: response.title,
+        dateStart: response.dateStart,
+        status: status,
+        dependenciesId: dependenciesId,
+        fetched: true,
+      });
 
       this._computeDependenciesStatus(issueId);
       this._computeWarnings(issueId);
@@ -142,7 +140,7 @@ const IssueStatus = React.createClass({
   },
 
   componentWillMount() {
-    this._addIssue({id: this.state.topIssueId});
+    this._addOrUpdateIssue({id: this.state.topIssueId});
     this._fetchIssue(this.state.topIssueId);
   },
 
