@@ -12,7 +12,7 @@ module.exports = function(build, grep) {
 
   var browsers = ['Firefox > 27', 'Chrome > 20', 'Explorer > 9', 'Safari > 6', 'Opera > 11.5', 'iOS > 6.1'];
   var autoprefixerConfig = JSON.stringify({browsers: browsers});
-  var jsxExcludes = [/node_modules/, /bower_components/];
+  var jsxExcludes = [/node_modules/];
 
   var config = {
     resolve: {
