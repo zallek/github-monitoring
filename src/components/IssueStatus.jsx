@@ -9,11 +9,11 @@ import 'font-awesome/css/font-awesome.css';
 
 const GithubPropTypes = {
   repository: PropTypes.shape({
-    user: PropTypes.string.isRequiered,
-    project: PropTypes.string.isRequiered,
+    user: PropTypes.string.isRequired,
+    project: PropTypes.string.isRequired,
   }),
   issue: PropTypes.shape({
-    id: PropTypes.number.isRequiered,
+    id: PropTypes.string.isRequired,
   }),
 };
 
@@ -22,8 +22,8 @@ const IssueStatus = React.createClass({
   displayName: 'IssueStatus',
 
   propTypes: {
-    repository: GithubPropTypes.repository.isRequiered,
-    issue: GithubPropTypes.issue.isRequiered,
+    repository: GithubPropTypes.repository.isRequired,
+    issue: GithubPropTypes.issue.isRequired,
     displayDepedencies: PropTypes.bool,
   },
 
@@ -192,13 +192,13 @@ const IssueRowInfo = React.createClass({
   displayName: 'IssueRowInfo',
 
   propTypes: {
-    id: PropTypes.number.isRequiered,
-    href: PropTypes.string.isRequiered,
-    title: PropTypes.string.isRequiered,
-    dateStart: PropTypes.string.isRequiered,
-    status: PropTypes.oneOf(ISSUE_STATUS).isRequiered,
-    dependenciesStatus: PropTypes.oneOf(ISSUE_STATUS),
-    warnings: PropTypes.array(PropTypes.oneOf(ISSUE_WARNINGS)),
+    id: PropTypes.string.isRequired,
+    href: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    dateStart: PropTypes.string.isRequired,
+    status: PropTypes.oneOf(_.values(ISSUE_STATUS)).isRequired,
+    dependenciesStatus: PropTypes.oneOf(_.values(ISSUE_STATUS)),
+    warnings: PropTypes.arrayOf(PropTypes.oneOf(_.values(ISSUE_WARNINGS))),
   },
 
   _formatDate(date) {
@@ -245,7 +245,7 @@ const IssueWarning = React.createClass({
   displayName: 'IssueWarning',
 
   propTypes: {
-    title: PropTypes.string.isRequiered,
+    title: PropTypes.string.isRequired,
     abr: PropTypes.string,
     iconClassName: PropTypes.string,
     color: PropTypes.string,
