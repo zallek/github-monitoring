@@ -19,11 +19,7 @@ module.exports = function(build, grep) {
       extensions: ['', '.js', '.jsx'],
       root: [srcPath, npmPath]
     },
-    plugins: [
-      new webpack.ResolverPlugin(
-        new webpack.ResolverPlugin.DirectoryDescriptionFilePlugin('bower.json', ['main'])
-      )
-    ],
+    plugins: [],
     module: {
       loaders: [
         {
@@ -52,9 +48,9 @@ module.exports = function(build, grep) {
     config.devtool = 'inline-source-map';
     config.cache = true;
     config.output = {
-      path: resolve('./dist/'),
+      path: resolve('./build/'),
       filename: 'test.js',
-      publicPath: '/dist/'
+      publicPath: '/build/'
     };
     config.module.loaders.push({
       test: /\.jsx?$/,
@@ -65,7 +61,8 @@ module.exports = function(build, grep) {
       new webpack.DefinePlugin({
         // This allows to dynamically define what test files we want to run
         // See karma.conf.js
-        GREP: grep || '/\\.spec\\.jsx?$/'
+        GREP: grep || '/\\.spec\\.jsx?$/',
+        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
       }),
       new webpack.ProvidePlugin({
         expect: 'expect'
@@ -73,20 +70,18 @@ module.exports = function(build, grep) {
     );
     break;
   case 'dev':
-    // This is not as dirty as it looks. It just generates source maps without being crazy slow.
-    // Source map lines will be slightly offset, use config.devtool = 'source-map'; to generate cleaner source maps.
-    config.devtool = 'eval';
+    config.devtool = 'inline-source-map';
 
     config.cache = true;
     config.entry = [
       'webpack-dev-server/client?http://localhost:3000',
       'webpack/hot/only-dev-server',
-      './example/index.jsx'
+      './src/main.js'
     ];
     config.output = {
-      path: resolve('./dist/'),
-      filename: 'test.js',
-      publicPath: '/dist/'
+      path: resolve('./build/'),
+      filename: 'bundle.js',
+      publicPath: '/build/'
     };
     config.plugins.push(
       new webpack.HotModuleReplacementPlugin(),

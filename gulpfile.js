@@ -17,14 +17,14 @@ var dependencyTree = require('webpack-dependency-tree');
 var makeConfig = require('./make-webpack-config');
 var devConfig = makeConfig('dev');
 var optiConfig = makeConfig('optimize');
-var config = makeConfig('dist');
+var distConfig = makeConfig('dist');
 
 gulp.task('clean:dist', function(done) {
   del(['dist/'], done);
 });
 
 gulp.task('dist', ['clean:dist'], function(done) {
-  webpack(config, function(err, stats) {
+  webpack(distConfig, function(err, stats) {
     if (err) {
       throw new gutil.PluginError('webpack', err);
     }
@@ -96,7 +96,9 @@ gulp.task('stats', function(done) {
 gulp.task('server', function() {
   new WebpackDevServer(webpack(devConfig), {
     publicPath: devConfig.output.publicPath,
-    hot: true
+    hot: true,
+    contentBase: 'example/',
+    historyApiFallback: true,
   }).listen(3000, 'localhost', function (err, result) {
     if (err) {
       console.log(err);
