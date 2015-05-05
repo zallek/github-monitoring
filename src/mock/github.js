@@ -1,4 +1,3 @@
-import nextTick from 'next-tick';
 
 const LABELS = [
   'status-1-backlog',

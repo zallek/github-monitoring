@@ -10,11 +10,9 @@ import { ISSUE_WARNINGS, ISSUE_LABELS, DEPENDENCY_PATTERN } from 'constants/issu
 import './IssueStatus.scss';
 
 const GithubPropTypes = {
-  repository: PropTypes.shape({
+  issue: PropTypes.shape({
     user: PropTypes.string.isRequired,
     project: PropTypes.string.isRequired,
-  }),
-  issue: PropTypes.shape({
     id: PropTypes.string.isRequired,
   }),
 };
@@ -24,7 +22,6 @@ const IssueStatus = React.createClass({
   displayName: 'IssueStatus',
 
   propTypes: {
-    repository: GithubPropTypes.repository.isRequired,
     issue: GithubPropTypes.issue.isRequired,
     displayDepedencies: PropTypes.bool,
   },
@@ -37,7 +34,6 @@ const IssueStatus = React.createClass({
 
   getInitialState() {
     return {
-      topIssueId: this.props.issue.id,
       issuesList: {},
     };
   },
@@ -124,13 +120,13 @@ const IssueStatus = React.createClass({
 
   _fetchIssue(issueId) {
     let {
-      repository: { user, project },
+      issue: { user, project },
     } = this.props;
 
     GithubApi.getIssueInfo({user, project, issueId}, (response) => {
       let dependenciesId = this._extractDependencies(response.comments);
 
-      let labels = _.uniq(_.filter(ISSUE_LABELS, ({status}, label) => _.contains(response.labels, label)));
+      let labels = _.uniq(_.filter(ISSUE_LABELS, (value, label) => _.contains(response.labels, label)));
       let status = this._getLowestStatusStep(_.pluck(labels, 'status'));
       let warnings = [];
 
@@ -159,10 +155,10 @@ const IssueStatus = React.createClass({
           this._fetchIssue(dependencyId);
         }
 
-        let dependentsIdDeep = this._getDependentsIdDeep(issueId),
-            includedInDeepDependents = _.contains(dependentsIdDeep, dependencyId),
-            dependenciesId = dependencyIssue ? dependencyIssue.dependencies : [],
-            includedInDependencies = _.contains(dependenciesId, dependencyId);
+        let _dependentsIdDeep = this._getDependentsIdDeep(issueId),
+            includedInDeepDependents = _.contains(_dependentsIdDeep, dependencyId),
+            _dependenciesId = dependencyIssue ? dependencyIssue.dependencies : [],
+            includedInDependencies = _.contains(_dependenciesId, dependencyId);
 
         if (includedInDeepDependents) {
           warnings.push(ISSUE_WARNINGS.DEPENDENCIES_CYCLIC(dependencyId));
@@ -212,20 +208,19 @@ const IssueStatus = React.createClass({
   },
 
   componentWillMount() {
-    let {topIssueId} = this.state;
-    this._addIssue({id: topIssueId});
-    this._fetchIssue(topIssueId);
+    let {issue} = this.props;
+    this._addIssue({id: issue.id});
+    this._fetchIssue(issue.id);
   },
 
   render() {
-    let {topIssueId} = this.state,
-        {displayDepedencies} = this.props,
-        dependenciesId = this._getDependenciesIdDeep(topIssueId);
+    let {issue, displayDepedencies} = this.props,
+        dependenciesId = this._getDependenciesIdDeep(issue.id);
 
     return (
       <div className="IssueStatus">
         <div className="IssueStatus-issue">
-          {this._renderIssueInfo(topIssueId)}
+          {this._renderIssueInfo(issue.id)}
         </div>
         {displayDepedencies && dependenciesId.length > 0 &&
           <div className="IssueStatus-dependencies">
