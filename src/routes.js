@@ -5,7 +5,7 @@ import HomeHandler from 'handlers/HomeHandler';
 import IssueStatusHandler from 'handlers/IssueStatusHandler';
 
 // declare our routes and their hierarchy
-var routes = (
+let routes = (
   <Route handler={HomeHandler} path="/">
     <Route path="issue/:id" handler={IssueStatusHandler}/>
   </Route>
