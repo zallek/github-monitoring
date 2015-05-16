@@ -1,26 +1,26 @@
-.IssueInfoRow{
+.IssueInfo{
   display: flex;
 
   .panel-body{
-    & > *, & > .IssueInfoRow-info > *{
+    & > *, & > .IssueInfo-info > *{
       padding: 5px;
     }
 
-    .IssueInfoRow-info {
+    .IssueInfo-info {
       display: inline;
     }
 
-    .IssueInfoRow-id{
+    .IssueInfo-id{
       flex: 0 0 20px;
     }
-    .IssueInfoRow-title{
+    .IssueInfo-title{
       flex: 1 1 auto;
       text-overflow: ellipsis;
     }
-    .IssueInfoRow-dateStart{
+    .IssueInfo-dateStart{
       flex: 1 1 auto;
     }
-    .IssueInfoRow-status, .IssueInfoRow-dependenciesStatus{
+    .IssueInfo-status, .IssueInfo-dependenciesStatus{
       flex: 1 1 auto;
 
       &:hover{
@@ -28,7 +28,7 @@
         border-radius: 4px;
       }
     }
-    .IssueInfoRow-warnings{
+    .IssueInfo-warnings{
       flex: 1 1 auto;
       display: inline;
     }

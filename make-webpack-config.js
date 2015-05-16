@@ -70,7 +70,7 @@ module.exports = function(build, grep) {
     );
     break;
   case 'dev':
-    config.devtool = 'inline-source-map';
+    config.devtool = 'eval';
 
     config.cache = true;
     config.entry = [

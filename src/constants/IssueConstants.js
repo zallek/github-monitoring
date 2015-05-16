@@ -1,5 +1,5 @@
 /**
- * Gravity
+ * Warnings
  * @type Array<{gravity: <Integer>, label: <String>}>
  * @description Gravity: from 0 to 2, the lesser, the more important it is.
  */
@@ -27,19 +27,15 @@ export const ISSUE_STATUS = {
   DEPLOYED_PRODUCTION: {step: 4, label: 'Deployed in production', color: 'rgb(50, 166, 46)'},
 };
 
-/**
- * Issue State
- * @type {Map}
- */
-export const ISSUE_LABELS = {
-  'status-1-backlog': {status: ISSUE_STATUS.BACKLOG},
-  'status-2-this-week': {status: ISSUE_STATUS.BACKLOG},
-  'status-3-development': {status: ISSUE_STATUS.WORK_IN_PROGRESS},
-  'status-4-help-wanted': {status: ISSUE_STATUS.ON_HOLD},
-  'status-5-waiting-for-review': {status: ISSUE_STATUS.WORK_IN_PROGRESS},
-  'status-6-ready-for-stating': {status: ISSUE_STATUS.WORK_IN_PROGRESS},
-  'deployed-staging': {status: ISSUE_STATUS.DEPLOYED_STATING},
-  'deployed-production': {status: ISSUE_STATUS.DEPLOYED_PRODUCTION},
-};
+export const ISSUE_LABELS = [
+  {name: 'status-1-backlog', status: ISSUE_STATUS.BACKLOG},
+  {name: 'status-2-this-week', status: ISSUE_STATUS.BACKLOG},
+  {name: 'status-3-development', status: ISSUE_STATUS.WORK_IN_PROGRESS},
+  {name: 'status-4-help-wanted', status: ISSUE_STATUS.ON_HOLD},
+  {name: 'status-5-waiting-for-review', status: ISSUE_STATUS.WORK_IN_PROGRESS},
+  {name: 'status-6-ready-for-stating', status: ISSUE_STATUS.WORK_IN_PROGRESS},
+  {name: 'deployed-staging', status: ISSUE_STATUS.DEPLOYED_STATING},
+  {name: 'deployed-production', status: ISSUE_STATUS.DEPLOYED_PRODUCTION},
+];
 
-export const DEPENDENCY_PATTERN = /^DEPENDS ON #([\d]+)$/; //@TODO do not test case
+export const DEPENDENCY_PATTERN = /^DEPENDS ON https:\/\/github\.com\/([\w-]+)\/([\w-]+)\/issues\/(\d+)$/i;

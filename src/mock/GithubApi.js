@@ -27,21 +27,23 @@ function generateRandomComments() {
   //Max 3, chance: (30%^X) to get X
   for (let i = 0; i < 3; i++) {
     let random = randomInt(1, 100);
-    if (random <= 35) {
+    if (random <= 0) {
       comments.push(`DEPENDS ON #${randomInt(1, 100)}`);
     }
   }
   return comments;
 }
 
-export function getIssueInfo({user, project, issueId}, callback) {
-  setTimeout(() => {
-    callback({
-      title: `Title ${issueId}`,
-      href: `https://github.com/${user}/{project}/issues/{issueId}`,
-      dateStart: '2015-05-01',
-      labels: pickRandom(LABELS),
-      comments: generateRandomComments(),
-    });
-  }, 500);
+export function fetchIssue({user, project, issueId}) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve({
+        title: `Title ${issueId}`,
+        href: `https://github.com/${user}/{project}/issues/{issueId}`,
+        dateStart: '2015-05-01',
+        labels: pickRandom(LABELS),
+        comments: generateRandomComments(),
+      });
+    }, 500);
+  });
 }

@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react';
 
-import IssueStatus from 'components/IssueStatus';
+import IssueStatusController from 'controllers/IssueStatusController';
 
 
 let IssueStatusHandler = React.createClass({
@@ -9,15 +9,15 @@ let IssueStatusHandler = React.createClass({
 
   propTypes: {
     params: PropTypes.shape({
-      id: PropTypes.number.isRequired,
+      id: PropTypes.string.isRequired,
     }).isRequired,
   },
 
   render() {
     let id = this.props.params.id;
     return (
-      <IssueStatus
-        issue={{
+      <IssueStatusController
+        issueId={{
           id: id,
           user: 'user',
           project: 'project',
