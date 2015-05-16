@@ -19,8 +19,8 @@ let IssueStatusHandler = React.createClass({
       <IssueStatus
         issue={{
           id: id,
-          user: "user",
-          project: "project",
+          user: 'user',
+          project: 'project',
         }}
         displayDepedencies={true}
       />

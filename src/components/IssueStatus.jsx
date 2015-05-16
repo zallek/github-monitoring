@@ -28,7 +28,7 @@ const IssueStatus = React.createClass({
 
   getDefaultPropTypes() {
     return {
-      displayDepedencies: false
+      displayDepedencies: false,
     };
   },
 
@@ -59,9 +59,9 @@ const IssueStatus = React.createClass({
         [issueId]: {
           dependenciesStatus: {
             $set: dependenciesStatus,
-          }
-        }
-      }
+          },
+        },
+      },
     }));
 
     _.each(issue.dependentsId, this._computeDependenciesStatus);
@@ -86,9 +86,9 @@ const IssueStatus = React.createClass({
             warnings: [],
             fetched: false,
             ...othersProps,
-          }
-        }
-      }
+          },
+        },
+      },
     }));
   },
 
@@ -98,9 +98,9 @@ const IssueStatus = React.createClass({
         [id]: {
           $merge: {
             ...othersProps,
-          }
-        }
-      }
+          },
+        },
+      },
     }));
   },
 
@@ -171,9 +171,9 @@ const IssueStatus = React.createClass({
               [issueId]: {
                 dependenciesId: {
                   $push: [dependencyId],
-                }
-              }
-            }
+                },
+              },
+            },
           }));
           //Add issueId to dependencyId's dependents
           this.setState(update(this.state, {
@@ -181,9 +181,9 @@ const IssueStatus = React.createClass({
               [dependencyId]: {
                 dependentsId: {
                   $push: [issueId],
-                }
-              }
-            }
+                },
+              },
+            },
           }));
         }
       });
@@ -200,9 +200,9 @@ const IssueStatus = React.createClass({
           [issueId]: {
             warnings: {
               $push: warnings,
-            }
-          }
-        }
+            },
+          },
+        },
       }));
     });
   },

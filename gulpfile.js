@@ -109,8 +109,7 @@ gulp.task('server', function() {
 });
 
 gulp.task('lint', function() {
-  var exclude = ['!node_modules/**', '!dist/**'];
-  return gulp.src(exclude.concat(['**/*.js', '**/*.jsx']))
+  return gulp.src(['**/*.js', '**/*.jsx'])
     .pipe(eslint())
     .pipe(eslint.format())
     .pipe(eslint.failOnError());
